@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <mpi.h>
+#include <vector>
 
 /**  @brief Exchanges values between the current process and its neighbor.
  *   Keeps either the smaller or larger value based on the `keepMin` flag.
@@ -50,15 +51,13 @@ int main(int argc, char** argv) {
     infile.read(reinterpret_cast<char*>(&byte), 1);
     int number = static_cast<int>(byte); // Convert to int for sorting
 
-    // Print the original (unsorted) sequence on a single line
-    for (int i = 0; i < size; i++) {
-        if (rank == i && i != size -1) {
-            std::cout << number << " " ;
-        }
-        else if (rank == i && i == size - 1){
-            std::cout << number << std::endl;
-        }
-        MPI_Barrier(MPI_COMM_WORLD);
+    // === Print the original sequence (in one line) ===
+    std::vector<int> gathered(size);
+    MPI_Gather(&number, 1, MPI_INT, gathered.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        for (int i = 0; i < size; ++i)
+            std::cout << gathered[i] << (i != size - 1 ? " " : "\n");
     }
     
      // Perform odd-even transposition sort
@@ -83,12 +82,12 @@ int main(int argc, char** argv) {
         }
     }
 
-    // Print the final sorted sequence (one number per line)
-    for (int i = 0; i < size; i++) {
-        if (rank == i) {
-            std::cout << number << std::endl;
-        }
-        MPI_Barrier(MPI_COMM_WORLD);
+    // === Print the sorted sequence (one per line) ===
+    MPI_Gather(&number, 1, MPI_INT, gathered.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        for (int i = 0; i < size; ++i)
+            std::cout << gathered[i] << std::endl;
     }
     
     // Finalize MPI
