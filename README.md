@@ -55,6 +55,6 @@ Output:
 
 
 ## 👨‍💻 Author
-Student: Dinara Garipova (xgarip00)
-Project for: PRL – Parallel and Distributed Systems (FIT VUT)
-Semester: Summer 2024/2025
+- Student: Dinara Garipova (xgarip00)
+- Project for: PRL – Parallel and Distributed Systems (FIT VUT)
+- Semester: Summer 2024/2025
